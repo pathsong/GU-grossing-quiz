@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pathology Grossing Quizzes</title>
+<meta name="description" content="A growing archive of surgical-pathology grossing quizzes by organ system (GU, and more to come). Bilingual KR/EN.">
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#2a2f3a;--txt:#e6e8ec;--sub:#9aa3b2;--accent:#4f8cff;--chip:#222733;--soon:#6b7280;}
+  @media (prefers-color-scheme: light){:root{--bg:#f6f7f9;--card:#fff;--line:#e3e6ea;--txt:#1c2128;--sub:#5b6472;--accent:#2563eb;--chip:#eef1f5;--soon:#9aa3b2;}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:ui-sans-serif,system-ui,-apple-system,"Apple SD Gothic Neo",Segoe UI,Roboto,sans-serif;line-height:1.55}
+  .wrap{max-width:820px;margin:0 auto;padding:28px 16px 80px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  h1{font-size:26px;margin:0 0 6px}
+  .meta{color:var(--sub);font-size:14px;margin-bottom:22px}
+  .btn{border:1px solid var(--accent);background:transparent;color:var(--accent);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .cardlink{text-decoration:none;color:inherit}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;height:100%;transition:.12s}
+  .cardlink:hover .card{border-color:var(--accent);transform:translateY(-2px)}
+  .card.soon{opacity:.6}
+  .ctitle{font-size:17px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .cdesc{color:var(--sub);font-size:13px;margin:0 0 12px}
+  .tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--sub)}
+  .tag.live{color:#2ea96b;border-color:#2ea96b}
+  .tag.soon{color:var(--soon)}
+  .foot{color:var(--sub);font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1 id="title"></h1><div class="meta" id="meta"></div></div>
+    <button class="btn" id="langBtn"></button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const UI={
+ ko:{title:"병리 그로싱 퀴즈",meta:"장기별 surgical pathology 그로싱 퀴즈 모음. 계속 추가됩니다. (카드 클릭 → 퀴즈)",lang:"English",live:"이용 가능",soon:"준비중",
+   foot:"학습용 — WCM/NYP GU grossing guidelines + CAP protocols + Westra 기반. 병기 AJCC 8판. 최종은 기관·attending 확인."},
+ en:{title:"Pathology Grossing Quizzes",meta:"A growing archive of surgical-pathology grossing quizzes by organ system. (Click a card → quiz)",lang:"한국어",live:"Available",soon:"Coming soon",
+   foot:"Educational — based on WCM/NYP GU grossing guidelines + CAP protocols + Westra. Staging per AJCC 8th. Defer to your institution and attendings."}
+};
+// To add a new quiz: copy a line, set href to its folder (e.g. "breast/"), and flip live:true.
+const ITEMS=[
+ {href:"gu/", live:true, n:64, ko:{t:"GU (비뇨생식)",d:"Prostate · Testis · Kidney · Bladder — 수술법·margin·entire vs representative·gross→진단·pT staging"},
+   en:{t:"Genitourinary",d:"Prostate · Testis · Kidney · Bladder — procedures, margins, entire vs representative, gross→diagnosis, pT staging"}},
+ {href:"breast/", live:false, ko:{t:"유방 (Breast)",d:"준비중"}, en:{t:"Breast",d:"Coming soon"}},
+ {href:"git/", live:false, ko:{t:"위장관 (GI)",d:"준비중"}, en:{t:"Gastrointestinal",d:"Coming soon"}},
+ {href:"gyn/", live:false, ko:{t:"부인과 (GYN)",d:"준비중"}, en:{t:"Gynecologic",d:"Coming soon"}},
+ {href:"thoracic/", live:false, ko:{t:"흉부 (Thoracic)",d:"준비중"}, en:{t:"Thoracic",d:"Coming soon"}},
+ {href:"hn/", live:false, ko:{t:"두경부 (Head & Neck)",d:"준비중"}, en:{t:"Head & Neck",d:"Coming soon"}}
+];
+let lang=(navigator.language||"en").toLowerCase().startsWith("ko")?"ko":"en";
+const el=id=>document.getElementById(id);
+function render(){
+ const ui=UI[lang];document.documentElement.lang=lang;
+ el("title").textContent=ui.title;el("meta").textContent=ui.meta;el("langBtn").textContent=ui.lang;el("foot").textContent=ui.foot;
+ const g=el("grid");g.innerHTML='';
+ ITEMS.forEach(it=>{
+  const L=it[lang];
+  const tag=it.live?`<span class="tag live">● ${ui.live}${it.n?(' · '+it.n+'Q'):''}</span>`:`<span class="tag soon">○ ${ui.soon}</span>`;
+  const inner=`<div class="card${it.live?'':' soon'}"><div class="ctitle">${L.t}</div><div class="cdesc">${L.d}</div>${tag}</div>`;
+  if(it.live){const a=document.createElement('a');a.className='cardlink';a.href=it.href;a.innerHTML=inner;g.appendChild(a);}
+  else{const d=document.createElement('div');d.className='cardlink';d.style.cursor='default';d.innerHTML=inner;g.appendChild(d);}
+ });
+}
+el("langBtn").onclick=()=>{lang=lang==="ko"?"en":"ko";render();};
+render();
+</script>
+</body>
+</html>
